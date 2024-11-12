@@ -5,6 +5,8 @@ import ErrorPage from '../src/components/ErrorPage/ErrorPage.jsx';
 import Home from '../src/components/Home/Home.jsx';
 import App from './App.jsx';
 import Login from './components/Login/Login.jsx';
+import Register from './components/Register/Register.jsx';
+import SignUp from './components/SignUp/SignUp.jsx';
 import './index.css';
 
 const router = createBrowserRouter([
@@ -12,10 +14,6 @@ const router = createBrowserRouter([
     path: "/",
     element: <App />,
     errorElement: <ErrorPage></ErrorPage>,
-    loader: () => {
-      const response = fetch('/data/alldata.json');
-      return response; 
-    },
     children: [
       {
         path: "/",
@@ -23,7 +21,13 @@ const router = createBrowserRouter([
      },{
       path: "/login",
       element: <Login />
-   },
+   },{
+      path: "/register",
+      element: <Register />
+   },{
+    path: "/signup",
+    element: <SignUp />
+ },
 
     ],
   },

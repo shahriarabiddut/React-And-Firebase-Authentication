@@ -1,6 +1,6 @@
 import { GithubAuthProvider, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import React, { useState } from 'react';
-import auth from '../../firebase/firebase.init';
+import auth from '../../firebase/mainfirebase.init';
 
 export default function Login() {
     const [user,setUser ] = useState(null);
@@ -52,10 +52,36 @@ export default function Login() {
                 
             </div> 
         :
-            <div className="flex justify-center gap-4">
+        <>
+            <div className="flex justify-center gap-4 my-4">
                 <button className='btn btn-success' onClick={handleSignIn}>Sign with Google</button>
                 <button className='btn btn-info' onClick={handleSignIn2}>Sign with Github</button>
             </div>
+            <hr />
+            <div className="w-2/3 mx-auto my-4">
+
+                    <h3 className='text-center text-5xl font-bold'>Login With Email</h3>
+                <div className="w-2/3 mx-auto">
+                    <form className="card-body" onSubmit="">
+                        <div className="form-control">
+                        <label className="label">
+                            <span className="label-text">Email</span>
+                        </label>
+                        <input type="email" name='email' placeholder="email" className="input input-bordered" required />
+                        </div>
+                        <div className="form-control">
+                        <label className="label">
+                            <span className="label-text">Password</span>
+                        </label>
+                        <input type="password" name='password' placeholder="password" className="input input-bordered" required />
+                        </div>
+                        <div className="form-control mt-6">
+                        <button className="btn btn-primary">Register</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </>
         }
         </div>
   )
