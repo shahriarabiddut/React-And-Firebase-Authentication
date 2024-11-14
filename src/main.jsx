@@ -5,8 +5,11 @@ import ErrorPage from '../src/components/ErrorPage/ErrorPage.jsx';
 import Home from '../src/components/Home/Home.jsx';
 import App from './App.jsx';
 import ChangePassword from './components/ChangePassword/ChangePassword.jsx';
+import Dashboard from './components/Dashboard/Dashboard.jsx';
 import Login from './components/Login/Login.jsx';
+import AuthProvider from './components/providers/AuthProvider.jsx';
 import Register from './components/Register/Register.jsx';
+import PrivateRoute from './components/routes/PrivateRoute.jsx';
 import SignUp from './components/SignUp/SignUp.jsx';
 import './index.css';
 
@@ -20,7 +23,7 @@ const router = createBrowserRouter([
         path: "/",
         element: <Home />
      },{
-      path: "/login",
+      path: "/profile",
       element: <Login />
    },{
       path: "/register",
@@ -33,12 +36,18 @@ const router = createBrowserRouter([
       path: "/changePassword",
       element: <ChangePassword />
     },
+    {
+      path: "/dashboard",
+      element: <PrivateRoute> <Dashboard /></PrivateRoute>
+    },
 
     ],
   },
 ]);
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </StrictMode>,
 )

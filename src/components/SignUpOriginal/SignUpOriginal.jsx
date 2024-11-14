@@ -1,13 +1,9 @@
-import { updateProfile } from 'firebase/auth';
-import React, { useContext, useState } from 'react';
+import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from 'firebase/auth';
+import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import auth from '../../firebase/mainfirebase.init';
-import { AuthContext } from '../providers/AuthProvider';
 
-// Sign Up Using Context ApI
-
-export default function SignUp() {
-    const { createUser } = useContext(AuthContext);
+export default function SignUpOriginal() {
     const [error,setError] = useState([]);
     const [success,setSuccess] = useState(false);
     const [showPass,setShowPass] = useState(false);
@@ -20,6 +16,19 @@ export default function SignUp() {
         const email = event.target.email.value;
         const password = event.target.password.value;
         const terms = event.target.terms.checked;
+        // console.log(email,password,terms);
+        // return;
+        // Password validation
+        // if(password.length < 6){
+        //     setError('Password should be  longer than 6 char!');
+        //     return;
+        // }else{
+        //     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=<>?])[A-Za-z\d!@#$%^&*()_\-+=<>?]{8,}$/;
+        //     if(!regex.test(password)){
+        //         setError('Password doesnot met requirement!');
+        //         return;
+        //     }
+        // }
         const pass = validatePassword(password);
         if(pass!=1){
             return;
@@ -31,16 +40,15 @@ export default function SignUp() {
             return;
         }
         // Create user using email and password
-        createUser(email,password)
+        createUserWithEmailAndPassword(auth,email,password)
         .then((userCredential) => {
             console.log(email,password,'Signed Up');
             setSuccess(true);
-            event.target.reset();
             // Send verification EMail
-            // sendEmailVerification(auth.currentUser)
-            // .then(() => {
-            //     setError(['Email verification sent!']);
-            // });
+            sendEmailVerification(auth.currentUser)
+            .then(() => {
+                setError(['Email verification sent!']);
+            });
             // Update Profile
             const profile = {
                 displayName: name, photoURL: ""
@@ -52,13 +60,13 @@ export default function SignUp() {
                     console.log(error);
                 });
           })
-        .catch((error) => {
+          .catch((error) => {
             const errorCode = error.code;
             const errorMessage = error.message;
             console.log(errorCode,errorMessage);
             setError([errorMessage]);
             setSuccess(false);
-        });
+          });
     }
 
     const validatePassword = (password) => {
@@ -119,7 +127,7 @@ export default function SignUp() {
                     <span className="label-text">Password</span>
                 </label>
                 <input type={showPass ? 'text':"password"} name='password' placeholder="password" className="input input-bordered" required />
-                <button type='button' className="btn btn-xs absolute right-4 top-12" onClick={() => setShowPass(!showPass)}>
+                <button className="btn btn-xs absolute right-4 top-12" onClick={() => setShowPass(!showPass)}>
                     {showPass ? 'Hide':"Show"}
                 </button>
                 </div>
@@ -130,7 +138,7 @@ export default function SignUp() {
                     </label>
                 </div>
                 <div className="form-control my-6">
-                <button type='submit' className="btn btn-primary">Sign Up</button>
+                <button className="btn btn-primary">Sign Up</button>
                 </div>
                 <div className="form-control">
                         <label className="label">

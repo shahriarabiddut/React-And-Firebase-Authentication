@@ -1,33 +1,44 @@
-import { GithubAuthProvider, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import React, { useContext, useEffect, useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { GithubAuthProvider, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup, signOut } from 'firebase/auth';
+import React, { useState } from 'react';
+import { NavLink } from 'react-router-dom';
 import auth from '../../firebase/mainfirebase.init';
-import { AuthContext } from '../providers/AuthProvider';
 
-// Sign IN Using Context ApI
-export default function Login() {
+export default function LoginOriginal() {
     const [error,setError] = useState([]);
     const [success,setSuccess] = useState(false);
+    const [user,setUser ] = useState(null);
     const provider = new GoogleAuthProvider();
     const provider2 = new GithubAuthProvider();
-    const {signInUser,user,setUser,signOutUser} = useContext(AuthContext);
-    const navigate = useNavigate();
     const handleSignIn = ()=>{
         signInWithPopup(auth,provider)
         .then((result)=>{
+            console.log(result.user);
             setUser(result.user);
         })
         .catch((error)=>{
+            console.log(error);
             setUser(null);
         })
     }
     const handleSignIn2 = ()=>{
         signInWithPopup(auth,provider2)
         .then((result)=>{
+            console.log(result.user);
             setUser(result.user);
         })
         .catch((error)=>{
+            console.log(error);
             setUser(null);
+        })
+    }
+    const handleSignOut = ()=>{
+        signOut(auth)
+        .then(()=>{
+            console.log('Signed Out!');
+            setUser(null);
+        })
+        .catch((error)=>{
+            console.log(error);
         })
     }
     const handleLogin = (e)=>{
@@ -36,34 +47,42 @@ export default function Login() {
         setSuccess(false);
         const email = e.target.email.value;
         const password = e.target.password.value;
-        // console.log(email,password);
-        e.target.reset();
-        signInUser(email,password)
+        console.log(email,password);
+        signInWithEmailAndPassword(auth,email,password)
         .then((result) => {
-            if(1 || result.user.emailVerified){
-                // setSuccess(true);
-                setUser(result.user);
-                navigate('/dashboard')
+            if(result.user.emailVerified){
+                console.log(result.user,'Signed In');
+                setSuccess(true);
+                setTimeout(()=>setUser(result.user),3000);
                 // setTimeout(setUser(result.user),2000); -> Calls Immediately
             }else{
                 setError(['Email Not Verified!']);
             }
+            
+
         })
         .catch((error) => {
+            const errorCode = error.code;
             const errorMessage = error.message;
+            console.log(errorCode,errorMessage);
             setError([errorMessage]);
             setSuccess(false);
         });
     }
-    useEffect(()=>{
-        if(user){
-            navigate('/dashboard')
-        }
-    },[]);
   return (
     <div className='min-h-screen mx-auto'>
         {
-            !user &&
+            user ?
+            <div className='flex border border-blue-500 p-3 gap-3 m-3 justify-start'>
+                <div className="col"><img src={user.photoURL || 'https://lh3.googleusercontent.com/ogw/AF2bZyjYiLMMtT6dYL-GHBUPEaIJYutLyunYAAGhXnU87ghJTjD1=s32-c-mo'} className='' alt="" /></div>
+                <div className="grid gap-3 py-1">
+                    <h4> {user.displayName || 'N/A'} [{user.email}]</h4>
+                    <button className='btn btn-warning p-3' onClick={handleSignOut}>Sign Out</button>
+                </div>
+                
+                
+            </div> 
+        :
         <>
             <div className="flex justify-center gap-4 my-4">
                 <button className='btn btn-success' onClick={handleSignIn}>Sign with Google</button>
