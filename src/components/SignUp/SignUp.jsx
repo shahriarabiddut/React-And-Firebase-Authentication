@@ -1,5 +1,6 @@
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from 'firebase/auth';
 import React, { useState } from 'react';
+import { NavLink } from 'react-router-dom';
 import auth from '../../firebase/mainfirebase.init';
 
 export default function SignUp() {
@@ -11,6 +12,7 @@ export default function SignUp() {
         event.preventDefault();
         setError([]);
         setSuccess(false);
+        const name = event.target.name.value;
         const email = event.target.email.value;
         const password = event.target.password.value;
         const terms = event.target.terms.checked;
@@ -42,12 +44,27 @@ export default function SignUp() {
         .then((userCredential) => {
             console.log(email,password,'Signed Up');
             setSuccess(true);
+            // Send verification EMail
+            sendEmailVerification(auth.currentUser)
+            .then(() => {
+                setError(['Email verification sent!']);
+            });
+            // Update Profile
+            const profile = {
+                displayName: name, photoURL: ""
+              }
+            updateProfile(auth.currentUser,profile )
+                .then(() => {
+                    console.log('Profile updated!');
+                }).catch((error) => {
+                    console.log(error);
+                });
           })
           .catch((error) => {
             const errorCode = error.code;
             const errorMessage = error.message;
             console.log(errorCode,errorMessage);
-            setError(errorMessage);
+            setError([errorMessage]);
             setSuccess(false);
           });
     }
@@ -95,6 +112,12 @@ export default function SignUp() {
             <form className="card-body shadow-lg rounded-lg" onSubmit={handleSignUp}>
                 <div className="form-control">
                 <label className="label">
+                    <span className="label-text">Name</span>
+                </label>
+                <input type="text" name='name' placeholder="name" className="input input-bordered" required />
+                </div>
+                <div className="form-control">
+                <label className="label">
                     <span className="label-text">Email</span>
                 </label>
                 <input type="email" name='email' placeholder="email" className="input input-bordered" required />
@@ -114,8 +137,13 @@ export default function SignUp() {
                         <span className="label-text ml-2">Accept React Firebase Spell</span>
                     </label>
                 </div>
-                <div className="form-control mt-6">
+                <div className="form-control my-6">
                 <button className="btn btn-primary">Sign Up</button>
+                </div>
+                <div className="form-control">
+                        <label className="label">
+                            <span className="label-text">Allready Have An Account? <NavLink className='text-blue-600 font-bold hover:text-purple-800' to='/login'>Sign In</NavLink> </span>
+                        </label>
                 </div>
             </form>
         </div>

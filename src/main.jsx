@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ErrorPage from '../src/components/ErrorPage/ErrorPage.jsx';
 import Home from '../src/components/Home/Home.jsx';
 import App from './App.jsx';
+import ChangePassword from './components/ChangePassword/ChangePassword.jsx';
 import Login from './components/Login/Login.jsx';
 import Register from './components/Register/Register.jsx';
 import SignUp from './components/SignUp/SignUp.jsx';
@@ -27,7 +28,11 @@ const router = createBrowserRouter([
    },{
     path: "/signup",
     element: <SignUp />
- },
+    },
+    {
+      path: "/changePassword",
+      element: <ChangePassword />
+    },
 
     ],
   },
